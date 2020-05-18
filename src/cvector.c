@@ -65,6 +65,15 @@ cvec new_cvec_with_const(real c, size_t n) {
 
 }
 
+cvec new_cvec_from_carray(real *array, size_t n) {
+
+	cvec res = new_cvec(n);
+	memcpy(res, array, n*sizeof(real));
+
+	return res;
+}
+
+
 void cvec_prod(cvec x, cvec y, cvec z) {
 
 	size_t N;
@@ -113,13 +122,6 @@ cvec new_cvec_from_div(cvec x, cvec y) {
 	return z;
 }
 
-cvec new_cvec_from_carray(real *array, size_t n) {
-
-	cvec res = new_cvec(n);
-	memcpy(res, array, n*sizeof(real));
-
-	return res;
-}
 
 bool cvec_equals(cvec x, cvec y) {
 

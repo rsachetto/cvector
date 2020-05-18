@@ -77,6 +77,7 @@ typedef struct {
 #define cvec_free(v)      ((void) ((v) ? free(cvec_header(v)) : (void)0), (v)=NULL)
 
 cvec new_cvec(size_t n);
+real cvec_min(cvec x);
 real cvec_dot_prod(cvec x, cvec y); 
 real cvec_max_norm(cvec x);
 cvec new_cvec_with_const(real c, size_t n);
@@ -86,6 +87,8 @@ void cvec_div(cvec x, cvec y, cvec z);
 cvec new_cvec_from_div(cvec x, cvec y);
 cvec new_cvec_from_carray(real *array, size_t n);
 bool cvec_equals(cvec x, cvec y);
-
+bool cvec_equals(cvec x, cvec y);
+bool cvec_equals_tol(cvec x, cvec y, real tol);
+real cvector_dot_prod(cvec x, cvec y);
 
 #endif /* __CVECTOR_H */

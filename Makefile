@@ -2,17 +2,18 @@ MKDIR_P = mkdir -p
 OUT_DIR = lib build
 CVEC_PRECISION = CVEC_PRECISION_DOUBLE
 
+
 all: directories cvector.a tests
 
 .PHONY: directories clean tests
 
 cvector.a: src/cvector.c src/cvector.h
-	gcc -D${CVEC_PRECISION} -c src/cvector.c -o build/cvector.o
+	gcc -g3 -D${CVEC_PRECISION} -c src/cvector.c -o build/cvector.o
 	ar rcs lib/cvector.a build/cvector.o
 	ranlib lib/cvector.a
 
 tests:
-	gcc -D${CVEC_PRECISION} tests/test_cvector.c ./lib/cvector.a -o tests/test_cvector -lcriterion -lm
+	gcc -g3 -D${CVEC_PRECISION} tests/test_cvector.c ./lib/cvector.a -o tests/test_cvector -lcriterion -lm
 
 directories: ${OUT_DIR}
 
