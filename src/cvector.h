@@ -62,33 +62,47 @@
 	#define ABS fabsl
 #endif
 
-typedef real* cvec;
+typedef real * cvec;
 
 typedef struct {
   size_t length;
   size_t capacity;
 } cvec_header_t;
 
-#define cvec_header(v)    ((cvec_header_t *) (v) - 1)
-#define cvec_len(v)       ((v) ? (ptrdiff_t) cvec_header(v)->length : 0)
-#define cvec_cap(v)       ((v) ? cvec_header(v)->capacity : 0)
-#define cvector_grow(a,b,c)   ((a) = cvec_growf((a), sizeof *(a), (b), (c)))
-#define cvec_setcap(v,n)  (cvector_grow(v,0,n), cvec_header(v)->length = n)
-#define cvec_free(v)      ((void) ((v) ? free(cvec_header(v)) : (void)0), (v)=NULL)
+#define cvec_header(v)       ((cvec_header_t *) (v) - 1)
+#define cvec_len(v)          ((v) ? (ptrdiff_t) cvec_header(v)->length : 0)
+#define cvec_cap(v)          ((v) ? cvec_header(v)->capacity : 0)
+#define cvec_grow(a,b,c)     ((a) = cvec_growf((a), sizeof *(a), (b), (c)))
+#define cvec_setcap(v,n)     (cvec_grow(v,0,n), cvec_header(v)->length = n)
+#define cvec_free(v)         ((void) ((v) ? free(cvec_header(v)) : (void)0), (v)=NULL)
+#define cvec_append(v, r)    ((v) = cvec_appendf(v, r))
 
 cvec new_cvec(size_t n);
-real cvec_min(cvec x);
-real cvec_dot_prod(cvec x, cvec y); 
-real cvec_max_norm(cvec x);
 cvec new_cvec_with_const(real c, size_t n);
+cvec new_cvec_from_c_array(real *array, size_t n);
 void cvec_prod(cvec x, cvec y, cvec z);
 cvec new_cvec_from_prod(cvec x, cvec y);
-void cvec_div(cvec x, cvec y, cvec z); 
+void cvec_div(cvec x, cvec y, cvec z);
 cvec new_cvec_from_div(cvec x, cvec y);
-cvec new_cvec_from_carray(real *array, size_t n);
-bool cvec_equals(cvec x, cvec y);
 bool cvec_equals(cvec x, cvec y);
 bool cvec_equals_tol(cvec x, cvec y, real tol);
 real cvector_dot_prod(cvec x, cvec y);
+real cvec_max_norm(cvec x);
+real cvec_w_rms_norm(cvec x, cvec w);
+real cvec_min(cvec x);
+real cvec_w_L2_norm(cvec x, cvec w);
+real cvec_L1_norm(cvec x);
+void cvec_abs(cvec x, cvec z);
+cvec cvec_new_from_abs(cvec x);
+void cvec_inv(cvec x, cvec z);
+cvec cvec_new_from_inv(cvec x);
+void cvec_add_const(cvec x, real b, cvec z);
+cvec cvec_new_from_add_const(cvec x, real b);
+void cvec_axpy(real a, cvec x, cvec y);
+cvec cvec_new_from_axpy(real a, cvec x, cvec y);
+void cvec_scale_by(real a, cvec x);
+cvec new_cvec_from_scale_by(real a, cvec x);
+cvec new_cvec_from_copy(cvec src);
+cvec cvec_appendf(cvec v, real r);
 
 #endif /* __CVECTOR_H */

@@ -48,7 +48,8 @@
 .tmp_versions/
 modules.order
 Module.symvers
-Mkfile.old
+Makfile.old
 dkms.conf
 .clangd/
 compile_commands.json
+tests/test_cvector

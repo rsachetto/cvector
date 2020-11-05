@@ -11,6 +11,8 @@
 #include <math.h>
 #include <assert.h>
 
+#define FOR(var, start, end) for(size_t (var) = (start); (var) < (end); (var)++)
+
 static void *cvec_growf(void *a, size_t elemsize, size_t addlen, size_t min_cap) {
 
 	void *b;
@@ -34,6 +36,7 @@ static void *cvec_growf(void *a, size_t elemsize, size_t addlen, size_t min_cap)
 	b = realloc((a) ? cvec_header(a) : 0, elemsize * min_cap + sizeof(cvec_header_t));
 	
 	b = (char *) b + sizeof(cvec_header_t);
+
 	if (a == NULL) {
 		cvec_header(b)->length = 0;
 	} 
@@ -43,21 +46,36 @@ static void *cvec_growf(void *a, size_t elemsize, size_t addlen, size_t min_cap)
 	return b;
 }
 
+cvec cvec_appendf(cvec v, real r) {
+
+	int l = 0;
+	int c = 0;
+
+	if(v) {
+		l = cvec_header(v)->length;
+		c = cvec_header(v)->capacity;
+	}
+
+	if(l + 1 > c)
+		cvec_grow(v,1,0);
+
+	v[cvec_header(v)->length++] = r;
+
+	return v;
+
+}
 
 cvec new_cvec(size_t n) {
-
 	cvec ret = NULL;
 	cvec_setcap(ret, n);
-
 	return ret;
-
 }
 
 cvec new_cvec_with_const(real c, size_t n) {
 
 	cvec ret = new_cvec(n);
 
-	for(size_t i = 0; i < n; i++) {
+	FOR(i, 0, n) {
 		ret[i] = c;	
 	}
 
@@ -65,7 +83,7 @@ cvec new_cvec_with_const(real c, size_t n) {
 
 }
 
-cvec new_cvec_from_carray(real *array, size_t n) {
+cvec new_cvec_from_c_array(real *array, size_t n) {
 
 	cvec res = new_cvec(n);
 	memcpy(res, array, n*sizeof(real));
@@ -73,6 +91,12 @@ cvec new_cvec_from_carray(real *array, size_t n) {
 	return res;
 }
 
+cvec new_cvec_from_copy(cvec src) {
+
+	size_t N = cvec_len(src);
+	return new_cvec_from_c_array(src, N);
+
+}
 
 void cvec_prod(cvec x, cvec y, cvec z) {
 
@@ -84,7 +108,6 @@ void cvec_prod(cvec x, cvec y, cvec z) {
 		z[i] = x[i]*y[i];
 	}
 
-	return;
 }
 
 cvec new_cvec_from_prod(cvec x, cvec y) {
@@ -108,7 +131,6 @@ void cvec_div(cvec x, cvec y, cvec z) {
 		z[i] = x[i]/y[i];
 	}
 
-	return;
 }
 
 cvec new_cvec_from_div(cvec x, cvec y) {
@@ -157,15 +179,11 @@ bool cvec_equals_tol(cvec x, cvec y, real tol) {
 
 real cvector_dot_prod(cvec x, cvec y) {
 
-  size_t N;
-  real sum, *xd, *yd;
-
-  sum = REAL_CONST(0.0);
-
-  N  = cvec_len(x);
+  size_t N = cvec_len(x);
+  real sum = REAL_CONST(0.0);
 
   for (size_t i = 0; i < N; i++) {
-    sum += x[i]*y[i];
+	  sum += x[i]*y[i];
   }
   
   return sum;
@@ -189,15 +207,11 @@ real cvec_max_norm(cvec x) {
 
 real cvec_w_rms_norm(cvec x, cvec w) {
 
-	size_t N;
-	real sum, prod;
-
-	sum = REAL_CONST(0.0);
-
-	N  = cvec_len(x);
+	size_t N = cvec_len(x);
+	real sum = REAL_CONST(0.0);
 
 	for (size_t i = 0; i < N; i++) {
-		prod = x[i]*w[i];
+		real prod = x[i]*w[i];
 		sum += SQR(prod);
 	}
 
@@ -206,32 +220,27 @@ real cvec_w_rms_norm(cvec x, cvec w) {
 }
 
 real cvec_min(cvec x) {
-  size_t N;
-  real min;
 
-  N  = cvec_len(x);
+	size_t N  = cvec_len(x);
 
-  min = x[0];
+	real min = x[0];
 
-  for (size_t i = 1; i < N; i++) {
-    if (x[i] < min) min = x[i];
-  }
+	for (size_t i = 1; i < N; i++) {
+		if (x[i] < min) min = x[i];
+	}
 
-  return min;
+	return min;
+
 }
 
 real cvec_w_L2_norm(cvec x, cvec w) {
 
-	size_t N;
-	real sum, prod;
+	size_t N  = cvec_len(x);
+	real sum = REAL_CONST(0.0);
 
-	sum = REAL_CONST(0.0);
-
-	N  = cvec_len(x);
 
 	for (size_t i = 0; i < N; i++) {
-		prod = x[i]*w[i];
-		sum += SQR(prod);
+		sum += SQR(x[i]*w[i]);
 	}
 
 	return SQRT(sum);
@@ -240,12 +249,8 @@ real cvec_w_L2_norm(cvec x, cvec w) {
 
 real cvec_L1_norm(cvec x) {
 
-	size_t N;
-	real sum, prod;
-
-	sum = REAL_CONST(0.0);
-
-	N  = cvec_len(x);
+	size_t N  = cvec_len(x);
+	real sum = REAL_CONST(0.0);
 
 	for (size_t i = 0; i < N; i++) {
 		sum += ABS(x[i]);
@@ -257,22 +262,17 @@ real cvec_L1_norm(cvec x) {
 
 void cvec_abs(cvec x, cvec z) {
 
-	size_t N;
-
-	N = cvec_len(x);
+	size_t N = cvec_len(x);
 
 	for (size_t i = 0; i < N; i++) {
 		z[i] = ABS(x[i]);
 	}
 
-	return;
 }
 
 cvec cvec_new_from_abs(cvec x) {
 
-	size_t N;
-
-	N = cvec_len(x);
+	size_t N = cvec_len(x);
 
 	cvec z = new_cvec(N);
 	cvec_abs(x, z);
@@ -284,24 +284,19 @@ void cvec_inv(cvec x, cvec z) {
 
 	assert(z);
 
-	size_t N;
-
-	N = cvec_len(x);
+	size_t N = cvec_len(x);
 
 	for (size_t i = 0; i < N; i++) {
 		z[i] = 1.0/x[i];
 	}
 
-	return;
 }
 
 cvec cvec_new_from_inv(cvec x) {
 
-	size_t N;
-
-	N = cvec_len(x);
-
+	size_t N = cvec_len(x);
 	cvec z = new_cvec(N);
+
 	cvec_inv(x, z);
 
 	return z;
@@ -311,21 +306,17 @@ void cvec_add_const(cvec x, real b, cvec z) {
 
 	assert(z);
 
-	size_t N;
+	size_t N = cvec_len(x);
 
-	N = cvec_len(x);
 	for (size_t i = 0; i < N; i++) {
 		z[i] = x[i] + b;
 	}
 
-	return;
 }
 
 cvec cvec_new_from_add_const(cvec x, real b) {
 
-	size_t N;
-
-	N = cvec_len(x);
+	size_t N = cvec_len(x);
 
 	cvec z = new_cvec(N);
 	cvec_add_const(x, b, z);
@@ -335,10 +326,9 @@ cvec cvec_new_from_add_const(cvec x, real b) {
 
 void cvec_axpy(real a, cvec x, cvec y) {
 
-	size_t N;
-	size_t i;
+	size_t N = cvec_len(x);
 
-	N  = cvec_len(x);
+	size_t i;
 
 	if (a == REAL_CONST(1.0)) {
 		for (i = 0; i < N; i++) {
@@ -363,12 +353,7 @@ void cvec_axpy(real a, cvec x, cvec y) {
 
 cvec cvec_new_from_axpy(real a, cvec x, cvec y) {
 
-	size_t N;
-	size_t i;
-
-	N  = cvec_len(x);
-
-	cvec z = new_cvec_from_carray(y, N);
+	cvec z = new_cvec_from_copy(y);
 	cvec_axpy(a, x, z);
 
 	return z;
@@ -380,21 +365,36 @@ void cvec_scale_by(real a, cvec x) {
 
 	N  = cvec_len(x);
 
-	for (size_t i = 0; i < N; i++) {
+	FOR(i, 0, N) {
 		x[i] *= a;
 	}
-
-	return;
 }
 
 cvec new_cvec_from_scale_by(real a, cvec x) {
+
+	cvec z = new_cvec_from_copy(x);
+	cvec_scale_by(a, z);
+
+	return z;
+}
+
+void cvec_square(cvec x) {
 
 	size_t N;
 
 	N  = cvec_len(x);
 
-	cvec z = new_cvec_from_carray(x, N);
-	cvec_scale_by(a, z);
+	FOR(i, 0, N) {
+		x[i] = SQR(x[i]);
+	}
+
+}
+
+cvec new_cvec_from_square(cvec x) {
+
+	cvec z = new_cvec_from_copy(x);
+	cvec_square(z);
 
 	return z;
+
 }

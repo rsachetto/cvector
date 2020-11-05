@@ -7,8 +7,8 @@
 
 #include <criterion/criterion.h>
 #include <signal.h>
-#include "../src/cvector.h"
 #include <time.h>
+#include "../src/cvector.h"
 
 #define N 20
 
@@ -54,7 +54,7 @@ Test(new, cvec_from_c_array) {
 	for(i = 0; i < N; i++) 
 		a[i] = rand_real(-20, 20);
 
-	cvec v = new_cvec_from_carray(a, N);
+	cvec v = new_cvec_from_c_array(a, N);
 
 	for(i = 0; i < N; i++) {
 		cr_assert_float_eq(v[i], a[i], 1e-10,  "Found %lf, Expected %lf.", v[i], a[i]);
@@ -179,7 +179,7 @@ Test (operations, cvec_equals) {
 	real c = REAL_CONST(2.5);
 
 	a = new_cvec_with_const(c, N);
-	b = new_cvec_from_carray(a, N);
+	b = new_cvec_from_c_array(a, N);
 
 	cr_assert_eq(cvec_len(a), N);
 	cr_assert_eq(cvec_len(b), N);
@@ -218,8 +218,8 @@ Test(operations, dot_prod) {
 
 	real dp1 = dot_product(a1, b1, N);
 		
-	cvec a = new_cvec_from_carray(a1, N);
-	cvec b = new_cvec_from_carray(b1, N);
+	cvec a = new_cvec_from_c_array(a1, N);
+	cvec b = new_cvec_from_c_array(b1, N);
 
 	real dp2 = cvector_dot_prod(a, b);
 
@@ -276,4 +276,123 @@ Test(operations, min) {
 
 
 }
+
+void axpy(real a, real * x, real * y, int n) {
+	for (size_t i = 0; i < n; i++) {
+		y[i] = a * x[i] + y[i];
+	}
+}
+
+Test(operations, axpy) {
+
+	real a1[N];
+	real b1[N];
+	
+	real a_xy = rand_real(-20, 20);
+	size_t i;
+
+	for(i = 0; i < N; i++) {
+		a1[i] = rand_real(-20, 20);
+		b1[i] = rand_real(-20, 20);
+	}
+
+	axpy(a_xy, a1, b1, N);
+
+	cvec a = new_cvec_from_c_array(a1, N);
+	cvec b = new_cvec_from_c_array(b1, N);
+
+	axpy(a_xy, a1, b1, N);
+
+	cvec_axpy(a_xy, a, b);
+
+	for(i = 0; i < N; i++) {
+		cr_assert_float_eq(b1[i], b[i], 0.0, "Found %lf, Expected %lf.", b1[i], b[i]);
+	}
+
+	cvec_free(a);
+	cvec_free(b);
+
+	a_xy = REAL_CONST(1.0);
+
+	for(i = 0; i < N; i++) {
+		a1[i] = rand_real(-20, 20);
+		b1[i] = rand_real(-20, 20);
+	}
+
+	axpy(a_xy, a1, b1, N);
+
+	a = new_cvec_from_c_array(a1, N);
+	b = new_cvec_from_c_array(b1, N);
+
+	axpy(a_xy, a1, b1, N);
+
+	cvec_axpy(a_xy, a, b);
+
+	for(i = 0; i < N; i++) {
+		cr_assert_float_eq(b1[i], b[i], 0.0, "Found %lf, Expected %lf.", b1[i], b[i]);
+	}
+
+	cvec_free(a);
+	cvec_free(b);
+
+	a_xy = REAL_CONST(-1.0);
+
+	for(i = 0; i < N; i++) {
+		a1[i] = rand_real(-20, 20);
+		b1[i] = rand_real(-20, 20);
+	}
+
+	axpy(a_xy, a1, b1, N);
+
+	a = new_cvec_from_c_array(a1, N);
+	b = new_cvec_from_c_array(b1, N);
+
+	axpy(a_xy, a1, b1, N);
+
+	cvec c = cvec_new_from_axpy(a_xy, a, b);
+	cvec_axpy(a_xy, a, b);
+
+	for(i = 0; i < N; i++) {
+		cr_assert_float_eq(b1[i], b[i], 0.0, "Found %lf, Expected %lf.", b1[i], b[i]);
+		cr_assert_float_eq(c[i], b[i], 0.0, "Found %lf, Expected %lf.", c[i], b[i]);
+	}
+
+}
+
+Test(operations, wmrs_norm) {
+
+	real result = 3.559026084010437;
+
+	cvec x = new_cvec(3);
+	x[0] = 2;
+	x[1] = 3;
+	x[2] = 5;
+
+	cvec y = new_cvec_with_const(REAL_CONST(1.0), 3);
+
+	real n = cvec_w_rms_norm(x, y);
+
+	cr_assert_float_eq(n, result, 1e-10, "Found %lf, Expected %lf.", n, result);
+
+}
+
+Test(operation, append) {
+
+	real result = 3.559026084010437;
+
+	cvec x = NULL;
+
+	cvec_append(x, 2.0);
+	cvec_append(x, 3.0);
+	cvec_append(x, 5.0);
+
+	cvec y = new_cvec_with_const(REAL_CONST(1.0), 3);
+
+	real n = cvec_w_rms_norm(x, y);
+
+	cr_assert_float_eq(n, result, 1e-10, "Found %lf, Expected %lf.", n, result);
+
+
+}
+
 
