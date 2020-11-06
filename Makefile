@@ -8,12 +8,12 @@ all: directories cvector.a tests
 .PHONY: directories clean tests
 
 cvector.a: src/cvector.c src/cvector.h
-	gcc -g3 -D${CVEC_PRECISION} -c src/cvector.c -o build/cvector.o
+	gcc -g -fopenmp -D${CVEC_PRECISION} -c src/cvector.c -o build/cvector.o
 	ar rcs lib/cvector.a build/cvector.o
 	ranlib lib/cvector.a
 
 tests:
-	gcc -g3 -D${CVEC_PRECISION} tests/test_cvector.c ./lib/cvector.a -o tests/test_cvector -lcriterion -lm
+	gcc -g -fopenmp -D${CVEC_PRECISION} tests/test_cvector.c ./lib/cvector.a -o tests/test_cvector -lcriterion -lm
 
 directories: ${OUT_DIR}
 

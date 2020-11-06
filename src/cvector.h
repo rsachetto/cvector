@@ -11,6 +11,8 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+#define FOR(var, start, end) for(size_t (var) = (start); (var) < (end); (var)++)
+
 #if defined(CVEC_PRECISION_DOUBLE)
 	typedef double real;
 	# define REAL_CONST(x) x##F
@@ -77,13 +79,13 @@ typedef struct {
 #define cvec_free(v)         ((void) ((v) ? free(cvec_header(v)) : (void)0), (v)=NULL)
 #define cvec_append(v, r)    ((v) = cvec_appendf(v, r))
 
-cvec new_cvec(size_t n);
-cvec new_cvec_with_const(real c, size_t n);
-cvec new_cvec_from_c_array(real *array, size_t n);
+cvec cvec_new(size_t n);
+cvec cvec_new_with_const(real c, size_t n);
+cvec cvec_new_from_c_array(real *array, size_t n);
 void cvec_prod(cvec x, cvec y, cvec z);
-cvec new_cvec_from_prod(cvec x, cvec y);
+cvec cvec_new_from_prod(cvec x, cvec y);
 void cvec_div(cvec x, cvec y, cvec z);
-cvec new_cvec_from_div(cvec x, cvec y);
+cvec cvec_new_from_div(cvec x, cvec y);
 bool cvec_equals(cvec x, cvec y);
 bool cvec_equals_tol(cvec x, cvec y, real tol);
 real cvector_dot_prod(cvec x, cvec y);
@@ -101,8 +103,8 @@ cvec cvec_new_from_add_const(cvec x, real b);
 void cvec_axpy(real a, cvec x, cvec y);
 cvec cvec_new_from_axpy(real a, cvec x, cvec y);
 void cvec_scale_by(real a, cvec x);
-cvec new_cvec_from_scale_by(real a, cvec x);
-cvec new_cvec_from_copy(cvec src);
+cvec cvec_new_from_scale_by(real a, cvec x);
+cvec cvec_new_from_copy(cvec src);
 cvec cvec_appendf(cvec v, real r);
 
 #endif /* __CVECTOR_H */

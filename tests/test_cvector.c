@@ -22,7 +22,7 @@ real rand_real(real low, real high) {
 
 Test(new, empty_new) {
 	
-	cvec v = new_cvec(N);
+	cvec v = cvec_new(N);
 	cr_assert_eq(cvec_len(v), N);
 
 	cvec_free(v);
@@ -31,7 +31,7 @@ Test(new, empty_new) {
 Test(new, new_with_const) {
 	
 	real c = REAL_CONST(2.0);
-	cvec v = new_cvec_with_const(c, N);
+	cvec v = cvec_new_with_const(c, N);
 	
 	cr_assert_eq(cvec_len(v), N);
 
@@ -54,7 +54,7 @@ Test(new, cvec_from_c_array) {
 	for(i = 0; i < N; i++) 
 		a[i] = rand_real(-20, 20);
 
-	cvec v = new_cvec_from_c_array(a, N);
+	cvec v = cvec_new_from_c_array(a, N);
 
 	for(i = 0; i < N; i++) {
 		cr_assert_float_eq(v[i], a[i], 1e-10,  "Found %lf, Expected %lf.", v[i], a[i]);
@@ -79,9 +79,9 @@ Test(operations, cvec_prod) {
 		b[i] = rand_real(-20, 20);
 
 
-	cvec va = new_cvec(N);
-	cvec vb = new_cvec(N);
-	cvec vc = new_cvec(N);
+	cvec va = cvec_new(N);
+	cvec vb = cvec_new(N);
+	cvec vc = cvec_new(N);
 
 	cr_assert_eq(cvec_len(va), N);
 	cr_assert_eq(cvec_len(vb), N);
@@ -101,7 +101,7 @@ Test(operations, cvec_prod) {
 
 	cvec_free(vc);
 
-	vc = new_cvec_from_prod(va, vb);
+	vc = cvec_new_from_prod(va, vb);
 	cr_assert_eq(cvec_len(vc), N);
 
 	for(i = 0; i < N; i++) {
@@ -125,9 +125,9 @@ Test(operations, cvec_div) {
 		b[i] = rand_real(-20, 20);
 
 
-	cvec va = new_cvec(N);
-	cvec vb = new_cvec(N);
-	cvec vc = new_cvec(N);
+	cvec va = cvec_new(N);
+	cvec vb = cvec_new(N);
+	cvec vc = cvec_new(N);
 
 	cr_assert_eq(cvec_len(va), N);
 	cr_assert_eq(cvec_len(vb), N);
@@ -147,7 +147,7 @@ Test(operations, cvec_div) {
 
 	cvec_free(vc);
 
-	vc = new_cvec_from_div(va, vb);
+	vc = cvec_new_from_div(va, vb);
 	cr_assert_eq(cvec_len(vc), N);
 
 	for(i = 0; i < N; i++) {
@@ -158,8 +158,8 @@ Test(operations, cvec_div) {
 
 Test (operations, cvec_equals) {
 
-	cvec a = new_cvec(N);
-	cvec b = new_cvec(N);
+	cvec a = cvec_new(N);
+	cvec b = cvec_new(N);
 
 	size_t i;
 
@@ -178,8 +178,8 @@ Test (operations, cvec_equals) {
 	cvec_free(b);
 	real c = REAL_CONST(2.5);
 
-	a = new_cvec_with_const(c, N);
-	b = new_cvec_from_c_array(a, N);
+	a = cvec_new_with_const(c, N);
+	b = cvec_new_from_c_array(a, N);
 
 	cr_assert_eq(cvec_len(a), N);
 	cr_assert_eq(cvec_len(b), N);
@@ -218,8 +218,8 @@ Test(operations, dot_prod) {
 
 	real dp1 = dot_product(a1, b1, N);
 		
-	cvec a = new_cvec_from_c_array(a1, N);
-	cvec b = new_cvec_from_c_array(b1, N);
+	cvec a = cvec_new_from_c_array(a1, N);
+	cvec b = cvec_new_from_c_array(b1, N);
 
 	real dp2 = cvector_dot_prod(a, b);
 
@@ -230,7 +230,7 @@ Test(operations, dot_prod) {
 
 Test(operations, max_norm) {
 
-	cvec a = new_cvec(N);
+	cvec a = cvec_new(N);
 
 	for(size_t i = 0; i < N; i++) {
 		a[i] = (real)i;
@@ -254,7 +254,7 @@ Test(operations, max_norm) {
 
 Test(operations, min) {
 
-	cvec a = new_cvec(N);
+	cvec a = cvec_new(N);
 
 	for(size_t i = 0; i < N; i++) {
 		a[i] = (real)i;
@@ -298,8 +298,8 @@ Test(operations, axpy) {
 
 	axpy(a_xy, a1, b1, N);
 
-	cvec a = new_cvec_from_c_array(a1, N);
-	cvec b = new_cvec_from_c_array(b1, N);
+	cvec a = cvec_new_from_c_array(a1, N);
+	cvec b = cvec_new_from_c_array(b1, N);
 
 	axpy(a_xy, a1, b1, N);
 
@@ -321,8 +321,8 @@ Test(operations, axpy) {
 
 	axpy(a_xy, a1, b1, N);
 
-	a = new_cvec_from_c_array(a1, N);
-	b = new_cvec_from_c_array(b1, N);
+	a = cvec_new_from_c_array(a1, N);
+	b = cvec_new_from_c_array(b1, N);
 
 	axpy(a_xy, a1, b1, N);
 
@@ -344,8 +344,8 @@ Test(operations, axpy) {
 
 	axpy(a_xy, a1, b1, N);
 
-	a = new_cvec_from_c_array(a1, N);
-	b = new_cvec_from_c_array(b1, N);
+	a = cvec_new_from_c_array(a1, N);
+	b = cvec_new_from_c_array(b1, N);
 
 	axpy(a_xy, a1, b1, N);
 
@@ -363,12 +363,12 @@ Test(operations, wmrs_norm) {
 
 	real result = 3.559026084010437;
 
-	cvec x = new_cvec(3);
+	cvec x = cvec_new(3);
 	x[0] = 2;
 	x[1] = 3;
 	x[2] = 5;
 
-	cvec y = new_cvec_with_const(REAL_CONST(1.0), 3);
+	cvec y = cvec_new_with_const(REAL_CONST(1.0), 3);
 
 	real n = cvec_w_rms_norm(x, y);
 
@@ -386,7 +386,7 @@ Test(operation, append) {
 	cvec_append(x, 3.0);
 	cvec_append(x, 5.0);
 
-	cvec y = new_cvec_with_const(REAL_CONST(1.0), 3);
+	cvec y = cvec_new_with_const(REAL_CONST(1.0), 3);
 
 	real n = cvec_w_rms_norm(x, y);
 
