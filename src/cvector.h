@@ -10,8 +10,12 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include <math.h>
 
 #define FOR(var, start, end) for(size_t (var) = (start); (var) < (end); (var)++)
+#define FOR_S(var, start, end, step) for(size_t (var) = (start); (var) <= (end); (var)+=(step))
+#define FOR_EACH(var, vec) for(size_t (var) = 0; (var) < cvec_len((vec)); (var)++)
+
 
 #if defined(CVEC_PRECISION_DOUBLE)
 	typedef double real;
@@ -20,7 +24,7 @@
 	# define MIN_REAL FLT_MIN
 #elif defined(CVEC_PRECISION_SINGLE)
 	typedef float real;
-	# define REAL_CONST(x) x##F
+	# define REAL_CONST(x) x
 	# define MAX_REAL DBL_MAX
 	# define MIN_REAL DBL_MIN
 #elif defined(CVEC_PRECISION_EXT)
@@ -28,8 +32,6 @@
 	# define REAL_CONST(x) x##L
 	# define MAX_REAL LDBL_MAX
 	# define MIN_REAL LDBL_MIN
-#elif defined(CVEC_PRECISION_EXT)
-
 #endif
 
 #if defined(CVEC_PRECISION_DOUBLE)
@@ -53,7 +55,7 @@
 #elif defined(CVEC_PRECISION_SINGLE)
 	#define POW powf
 #elif defined(CVEC_PRECISION_EXT)
-	#define POW pow
+	#define POW powl
 #endif
 
 #if defined(CVEC_PRECISION_DOUBLE)
@@ -63,6 +65,9 @@
 #elif defined(CVEC_PRECISION_EXT)
 	#define ABS fabsl
 #endif
+
+#define ONE REAL_CONST(1.0)
+#define ZERO REAL_CONST(0.0)
 
 typedef real * cvec;
 
@@ -106,5 +111,8 @@ void cvec_scale_by(real a, cvec x);
 cvec cvec_new_from_scale_by(real a, cvec x);
 cvec cvec_new_from_copy(cvec src);
 cvec cvec_appendf(cvec v, real r);
+cvec cvec_new_from_range(real start, real end, real step);
+
+void *cvec_growf(void *a, size_t elemsize, size_t addlen, size_t min_cap);
 
 #endif /* __CVECTOR_H */

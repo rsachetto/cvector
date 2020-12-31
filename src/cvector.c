@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void *cvec_growf(void *a, size_t elemsize, size_t addlen, size_t min_cap) {
+void *cvec_growf(void *a, size_t elemsize, size_t addlen, size_t min_cap) {
     void *b;
     size_t min_len = cvec_len(a) + addlen;
 
@@ -66,6 +66,16 @@ cvec cvec_new_with_const(real c, size_t n) {
 
     FOR(i, 0, n) {
         ret[i] = c;
+    }
+
+    return ret;
+}
+
+cvec cvec_new_from_range(real start, real end, real step) {
+    cvec ret = NULL;
+
+    FOR_S(i, start, end, step) {
+		cvec_append(ret, i);
     }
 
     return ret;
@@ -274,20 +284,20 @@ void cvec_axpy(real a, cvec x, cvec y) {
 
     if(a == REAL_CONST(1.0)) {
         for(i = 0; i < N; i++) {
-            y[i] += x[i];
+            y[i] = x[i] + y[i];
         }
         return;
     }
 
     if(a == -REAL_CONST(1.0)) {
         for(i = 0; i < N; i++) {
-            y[i] -= x[i];
+            y[i] = x[i] - y[i];
         }
         return;
     }
 
     for(i = 0; i < N; i++) {
-        y[i] += a * x[i];
+        y[i] = a * x[i] + y[i];
     }
 
     return;

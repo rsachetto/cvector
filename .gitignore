@@ -53,3 +53,4 @@ dkms.conf
 .clangd/
 compile_commands.json
 tests/test_cvector
+tests/test_cmat
